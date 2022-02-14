@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<time.h>
 #define take(n) int n;scanf("%d",&n)
+
 int rowclash(int box[9][9],int i,int j,int num){
     for(int col=0; col<9;col++){
         if(col!=j && box[i][col]==num) return 1;
@@ -37,7 +38,7 @@ int clash(int box[9][9],int i,int j,int num){
     if(boxclash(box,i,j,num)) return 1;
     return 0;
 }
-int solvesudoku(int box[9][9],int grid[82],int steps){
+int solvesudoku(int box[9][9],int grid[82],int steps,int rowvisit[9][9],int colvisit[9][9]){
     if(steps==0){
         return 1;
     }
@@ -73,12 +74,16 @@ int solvesudoku(int box[9][9],int grid[82],int steps){
                 break;
             }
         }
-        if(!rowclash(box,x,y,num) && !columnclash(box,x,y,num) && !boxclash(box,x,y,num)){
+        if(rowvisit[x][num-1] && colvisit[y][num-1] && !boxclash(box,x,y,num)){
             box[x][y]=num;
-            if(solvesudoku(box,grid,steps-1)){
+            colvisit[y][num-1]=0;
+            rowvisit[x][num-1]=0;
+            if(solvesudoku(box,grid,steps-1,rowvisit,colvisit)){
                 return 1;
             }
             box[x][y]=0;
+            colvisit[y][num-1]=1;
+            rowvisit[x][num-1]=1;
         }
         check[num] = 0;
     }
@@ -110,16 +115,21 @@ int unique(int box1[9][9],int box2[9][9]){
  
 void solve(){
     int box[9][9];
+    int rowvisit[9][9];
+    int colvisit[9][9];
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
             box[i][j]=0;
+            rowvisit[i][j]=1;
+            colvisit[i][j]=1;
         }
     }
     int check[82];
     for(int i=0;i<=81;i++){
         check[i]=1;
     }
-    solvesudoku(box,check,81);
+    // printf("i am here");
+    solvesudoku(box,check,81,rowvisit,colvisit);
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
             printf("%d ",box[i][j]);
