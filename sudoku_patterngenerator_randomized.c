@@ -2,6 +2,20 @@
 #include<stdlib.h>
 #include<time.h>
 #define take(n) int n;scanf("%d",&n)
+void printbox(int box[9][9]){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            printf("%d ",box[i][j]);
+            if(j!=8 && j%3==2) printf("| ");
+        }
+        if(i!=8 && i%3==2) {
+    printf("\n");
+            for(int x=0;x<21;x++) printf("-");
+        }
+    printf("\n");
+    }
+    printf("\n");
+}
 int rowclash(int box[9][9],int i,int j,int num){
     for(int col=0; col<9;col++){
         if(col!=j && box[i][col]==num) return 1;
@@ -31,12 +45,35 @@ int boxclash(int box[9][9],int i,int j,int num){
     }
     return 0;
 }
+int unique(int box1[9][9],int box2[9][9]){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            if(box1[i][j]!=box2[i][j]) return 0;
+        }
+    }
+    return 1;
+}
+ 
 int clash(int box[9][9],int i,int j,int num){
     if(rowclash(box,i,j,num)) return 1;
     if(columnclash(box,i,j,num)) return 1;
     if(boxclash(box,i,j,num)) return 1;
     return 0;
 }
+int isvalidsudoku(int box[9][9]){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            if(box[i][j]!=0){
+                if(clash(box,i,j,box[i][j])){
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+
 int solvesudoku(int box[9][9],int i,int j){
     if(i==8 && j==9)  return 1;
     if(j==9)  return solvesudoku(box,i+1,0);
@@ -67,29 +104,47 @@ int solvesudoku(int box[9][9],int i,int j){
     }
     return 0;
 }
-
-int isvalidsudoku(int box[9][9]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(box[i][j]!=0){
-                if(clash(box,i,j,box[i][j])){
-                    return 0;
+void diagonal_solve(int box[9][9]){
+    
+    for(int inc =0 ;inc<=6;inc+=3){
+        int checknum[10];
+        int checkcell[10];
+        for(int i=0;i<10;i++){
+            checknum[i] = checkcell[i] = 1;
+        }
+        for(int it=9;it>=1;it--){
+            int cell = (rand()%it) +1;
+            int count=0;
+            for(int i=1;i<=9;i++){
+                if(checkcell[i]==1){
+                    count++;
+                }
+                if(count==cell){
+                    cell = i;
+                    break;
                 }
             }
+            checkcell[cell] = 0;
+            // srand(time(0));
+            int num = (rand()%it) +1;
+            count=0;
+            for(int i=1;i<=9;i++){
+                if(checknum[i]==1){
+                    count++;
+                }
+                if(count==num){
+                    num = i;
+                    break;
+                }
+            }
+            checknum[num]=0;
+            cell--;
+            int x = cell/3;
+            int y = cell%3;
+            box[inc+x][inc+y] = num;
         }
     }
-    return 1;
 }
-
-int unique(int box1[9][9],int box2[9][9]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(box1[i][j]!=box2[i][j]) return 0;
-        }
-    }
-    return 1;
-}
- 
 void solve(){
     int box[9][9];
     for(int i=0;i<9;i++){
@@ -97,19 +152,9 @@ void solve(){
             box[i][j]=0;
         }
     }
+    diagonal_solve(box);
     solvesudoku(box,0,0);
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            printf("%d ",box[i][j]);
-            if(j!=8 && j%3==2) printf("| ");
-        }
-        if(i%3==2) {
-    printf("\n");
-            for(int x=0;x<21;x++) printf("-");
-        }
-    printf("\n");
-    }
-    printf("\n");
+    printbox(box);
     
 }
 int main(){
