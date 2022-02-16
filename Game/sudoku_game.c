@@ -195,28 +195,6 @@ int unique_solution(int box[9][9]){
     if(duplicate_grid(tempbox1,tempbox2)) return 1; //if both solutions are equal, that means unique solution
     return 0;
 }
-int solve_sudoku_randomized(int box[9][9],int i,int j){
-    if(j==9)  {
-        i++;
-        j=0;
-    }
-    if(i==9)  return 1;
-    if(box[i][j]!=0) return solve_sudoku_randomized(box,i,j+1);
-    int check[11];
-    for(int i=0;i<=10;i++) check[i]=1;
-    for(int it=9;it>=1;it--){
-        int num = select_random_number(box,check,it);
-        if(!clash(box,i,j,num)){
-            box[i][j]=num;
-            if(solve_sudoku_randomized(box,i,j+1)){
-                return 1;
-            }
-            box[i][j]=0;
-        }
-        check[num]=0;
-    }
-    return 0;
-}
 void puzzle_generator(int box[9][9],int grid[82],int steps){
     if(steps==0) return ;
     int index = select_random_grid(box,grid,steps);
@@ -287,6 +265,9 @@ void undo_move(int box[9][9],int puzzle[9][9]){
     if(puzzle[i][j]!=0){
         printf("Invalid coordinates!\n Chosen coordinates are not inputted by user by are part of puzzle\n");
     }
+    else if(box[i][j]==0){
+        printf("Chosen coordinates is already blank\n");
+    }
     else{
         box[i][j] = 0;
     }
@@ -316,6 +297,7 @@ void play(int puzzle[9][9]){
         printf("Press 1 to enter your next input\n");
         printf("Press 2 to get a hint\n");
         printf("Press 3 to undo a move\n");
+        printf("Press 4 to get the solution of this puzzle\n");
         printf("Press -1 to quit the game\n");
         printf("\n");
         scanf("%d",&choice);
@@ -327,6 +309,8 @@ void play(int puzzle[9][9]){
             case 3: undo_move(box,puzzle);
             break;
             case -1: return;
+            break;
+            case 4: printparallel(box,solution);
             break;
             defult: printf("Invalid entry, Please check menu\n");
         }
@@ -342,13 +326,55 @@ void solve(){
         }
     }
     diagonal_solve(box);
-    solve_sudoku_randomized(box,0,0);
+    solve_sudoku(box,0,0,1,9,1);
     generate_puzzle(box);
     printbox(box);
     play(box);
 }
+void input(){
+    int puzzle[9][9];
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            scanf("%d",&puzzle[i][j]);
+        }
+    }
+    while(1){
+        int choice;
+        printf("Press 1 if you want to solve the inputted puzzle yourself\n");
+        printf("Press 2 to get the solution of this puzzle\n");
+        printf("Press -1 to exit\n");
+        scanf("%d",&choice);
+        switch(choice){
+            case 1: play(puzzle);
+            break; 
+            case 2: solve_sudoku(puzzle,0,0,1,9,1);
+                    printbox(puzzle);
+            break;
+            case -1: return;
+            default : 
+            printf("Invalid entry, please check the menu and retry again\n");
+        }
+    }
+}
 int main(){
     srand(time(0));
-    solve();
+    int choice;
+    while(1){
+        printf("Press 1 to play a random sudoku game\n");
+        printf("Press 2 to input a sudoku\n");
+        printf("Press -1 to exit\n");
+        scanf("%d",&choice);
+        switch(choice){
+            case 1: solve();
+            break;
+            case 2: input();
+            break;
+            case -1: goto out;
+            default:
+            printf("Invalid entry!, please check the menu and try again\n");
+        }
+    }
+    out:
+
 return 0;
 }
