@@ -9,7 +9,7 @@ void printbox(int box[9][9]){
         printf("%d ",i);
     }
     printf("\n");
-    for(int i=0;i<20;i++) {
+    for(int i=0;i<15;i++) {
         printf("_ ");
     }
     printf("\n");
@@ -22,10 +22,57 @@ void printbox(int box[9][9]){
             if(j!=8 && j%3==2) printf("| ");
         }
         if(i!=8 && i%3==2) {
-    printf("\n");
-            for(int x=0;x<21;x++) printf("-");
+        printf("\n");
+            for(int x=0;x<26;x++) printf("-");
         }
+        printf("\n");
+    }
     printf("\n");
+}
+void printparallel(int box1[9][9],int box2[9][9]){
+    for(int i=0;i<3;i++)printf(" ");
+    for(int i=0;i<9;i++){
+        if(i%3==0) printf("  ");
+        printf("%d ",i);
+    }
+    printf("    ");
+    for(int i=0;i<3;i++)printf(" ");
+    for(int i=0;i<9;i++){
+        if(i%3==0) printf("  ");
+        printf("%d ",i);
+    }
+    printf("\n");
+    for(int i=0;i<14;i++) {
+        printf("_ ");
+    }
+    printf("   ");
+    for(int i=0;i<15;i++) {
+        printf("_ ");
+    }
+    printf("\n");
+    for(int i=0;i<9;i++){
+        printf("%d |  ",i);
+        for(int j=0;j<9;j++){
+            if(box1[i][j]!=0)
+            printf("%d ",box1[i][j]);
+            else printf("_ ");
+            if(j!=8 && j%3==2) printf("| ");
+        }
+        printf("    ");
+        printf("%d |  ",i);
+        for(int j=0;j<9;j++){
+            if(box2[i][j]!=0)
+            printf("%d ",box2[i][j]);
+            else printf("_ ");
+            if(j!=8 && j%3==2) printf("| ");
+        }
+        if(i!=8 && i%3==2) {
+        printf("\n");
+            for(int x=0;x<26;x++) printf("-");
+            printf("    ");
+            for(int x=0;x<26;x++) printf("-");
+        }
+        printf("\n");
     }
     printf("\n");
 }
@@ -211,14 +258,14 @@ int validinput(int box[9][9],int i,int j,int num){
     if(clash(box,i,j,num)) return 0;
     return 1;
 }
-void give_a_hint(int box[9][9],int solution[9][9]){
+void get_a_hint(int box[9][9],int solution[9][9]){
     int count=0;
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
             if(box[i][j]==0) count++;
         }
     }  
-    int number = rand()% count +1;
+    int number = rand()%count +1;
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
             if(box[i][j]==0) number--;
@@ -231,7 +278,21 @@ void give_a_hint(int box[9][9],int solution[9][9]){
     }
 
 }
+void undo_move(int box[9][9],int puzzle[9][9]){
+    printparallel(box,puzzle);
+    printf("Sudoku given on right side is the puzzle question\n");
+    int i,j;
+    printf("Enter the coordinates of your input where you want to erase\n");
+    scanf("%d%d",&i,&j);
+    if(puzzle[i][j]!=0){
+        printf("Invalid coordinates!\n Chosen coordinates are not inputted by user by are part of puzzle\n");
+    }
+    else{
+        box[i][j] = 0;
+    }
+}
 void takeinput(int box[9][9]){
+    printf("Enter coordinates and number in format: row col num\n");
     int i,j,num;
     scanf("%d%d %d",&i,&j,&num);
     if(validinput(box,i,j,num)){
@@ -241,22 +302,29 @@ void takeinput(int box[9][9]){
         printf("Invalid entry! Try again\n");
     }
 }
-void play(int box[9][9]){
+void play(int puzzle[9][9]){
+    int box[9][9];
     int solution[9][9];
     for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++)solution[i][j]=box[i][j];
+        for(int j=0;j<9;j++){
+            solution[i][j] = box[i][j] = puzzle[i][j];
+        }
     }
     solve_sudoku(solution,0,0,1,9,1);
     while(!duplicate_grid(box,solution)){
         int choice;
         printf("Press 1 to enter your next input\n");
-        printf("Press -1 to quit the game\n");
         printf("Press 2 to get a hint\n");
+        printf("Press 3 to undo a move\n");
+        printf("Press -1 to quit the game\n");
+        printf("\n");
         scanf("%d",&choice);
         switch(choice){
             case 1: takeinput(box);
             break;
-            case 2: give_a_hint(box,solution);
+            case 2: get_a_hint(box,solution);
+            break;
+            case 3: undo_move(box,puzzle);
             break;
             case -1: return;
             break;
