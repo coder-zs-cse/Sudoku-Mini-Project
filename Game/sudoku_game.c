@@ -9,7 +9,7 @@ void printbox(int box[9][9]){
         printf("%d ",i);
     }
     printf("\n");
-    for(int i=0;i<15;i++) {
+    for(int i=0;i<20;i++) {
         printf("_ ");
     }
     printf("\n");
@@ -211,33 +211,60 @@ int validinput(int box[9][9],int i,int j,int num){
     if(clash(box,i,j,num)) return 0;
     return 1;
 }
+void give_a_hint(int box[9][9],int solution[9][9]){
+    int count=0;
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            if(box[i][j]==0) count++;
+        }
+    }  
+    int number = rand()% count +1;
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            if(box[i][j]==0) number--;
+            if(number==0){
+                printf("At (%d,%d) the number is %d\n",i,j,solution[i][j]);
+                box[i][j] = solution[i][j];
+                return;
+            }
+        }
+    }
+
+}
+void takeinput(int box[9][9]){
+    int i,j,num;
+    scanf("%d%d %d",&i,&j,&num);
+    if(validinput(box,i,j,num)){
+        box[i][j]=num;
+    }
+    else{
+        printf("Invalid entry! Try again\n");
+    }
+}
 void play(int box[9][9]){
-    int choice;
-    printf("Enter 1 to solve the sudoku\n");
-    printf("Enter 0 to exit\n");
-    scanf("%d",&choice);
-    if(!choice) return;
     int solution[9][9];
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++)solution[i][j]=box[i][j];
     }
     solve_sudoku(solution,0,0,1,9,1);
     while(!duplicate_grid(box,solution)){
-        int i,j,num;
-        printf("Enter the coordinates and the number in format: x y num\n");
-        printf("Enter -1 to exit\n");
-        scanf("%d",&i);
-        if(i==-1) return;
-        scanf("%d%d",&j,&num);
-        if(validinput(box,i,j,num))
-        if(!validinput(box,i,j,num)){
-            printf("Invalid entry! Try again\n");
-        }
-        else{
-            box[i][j]=num;
+        int choice;
+        printf("Press 1 to enter your next input\n");
+        printf("Press -1 to quit the game\n");
+        printf("Press 2 to get a hint\n");
+        scanf("%d",&choice);
+        switch(choice){
+            case 1: takeinput(box);
+            break;
+            case 2: give_a_hint(box,solution);
+            break;
+            case -1: return;
+            break;
+            defult: printf("Invalid entry, Please check menu\n");
         }
         printbox(box);
     }
+    printf("Congratulations!\n You have solved the puzzle.\n");
 }
 void solve(){
     int box[9][9];
