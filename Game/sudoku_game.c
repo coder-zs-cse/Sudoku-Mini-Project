@@ -1,12 +1,25 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<string.h>
+#include<dirent.h>
+
 
 typedef struct {
     int puzzle[9][9];
     int solution[9][9];
 }sudoku;
+typedef struct{
+    char foldername[50];
+    char folderpath[50];
+}Folder;
 
+void Folder_init(Folder *f){
+    f->foldername[0]='\0';
+    f->folderpath[0]='\0';
+    strcat(f->foldername,"Progress_Reports");
+    strcat(f->folderpath,"Progress_Reports\\");
+}
 void init(sudoku *puzzle){
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
@@ -26,9 +39,6 @@ void copy_box1_to_box2(int box1[9][9],int box2[9][9]){
         }
     }
 }
-
-
-#define take(n) int n;scanf("%d",&n)
 void printbox(int box[9][9]){
     for(int i=0;i<3;i++)printf(" ");
     for(int i=0;i<9;i++){
@@ -351,17 +361,73 @@ void difficulty_mode(sudoku *matrix){
     out:
     fill_k_empty_boxes(matrix,k);
 }
+void take_file_name_from_user(char *file_path,Folder save_sudoku){
+
+    char name[50];
+    printf("Please enter a label to save your progress file with\n");
+    scanf("%s",name);
+    strcat(name,".txt");
+    file_path[0]='\0';
+    strcat(file_path,save_sudoku.folderpath);
+    strcat(file_path,name);
+    FILE *temp = fopen(file_path,"r");
+    if(temp!=NULL){
+        printf("There already exists a file with this name\n");
+        printf("Please enter a new label\n");
+        take_file_name_from_user(file_path,save_sudoku);
+    }
+}
+void save_progress(sudoku *matrix,sudoku *current,int numberofhints){
+    Folder save_sudoku;
+    Folder_init(&save_sudoku);
+    
+    DIR *d = opendir(save_sudoku.folderpath);
+    if(d==NULL){
+        int check = mkdir(save_sudoku.foldername);
+        d = opendir(save_sudoku.folderpath);
+    }
+    FILE *pointer;
+    char file_path[50];
+    take_file_name_from_user(file_path,save_sudoku);
+    pointer = fopen(file_path,"w+");
+
+    if(!pointer){
+        printf("Couldn't save the progress due to a file error\n");
+    }
+    else{
+        for(int i=0;i<9;i++){
+            for(int j=0;j<9;j++){
+                fprintf(pointer,"%d ",matrix->puzzle[i][j]);
+            }
+        }
+        for(int i=0;i<9;i++){
+            for(int j=0;j<9;j++){
+                fprintf(pointer,"%d ",matrix->solution[i][j]);
+            }
+        }
+        for(int i=0;i<9;i++){
+            for(int j=0;j<9;j++){
+                fprintf(pointer,"%d ",current->puzzle[i][j]);
+            }
+        }
+        fprintf(pointer,"%d ",numberofhints);
+        fclose(pointer);
+    }
+}
+
 void play_sudoku(sudoku *matrix){
     difficulty_mode(matrix);
     printbox(matrix->puzzle);
     sudoku current;
     copy_box1_to_box2(matrix->puzzle,current.puzzle);
+    int numberofhints=0;
     while(!is_box1_equal_to_box2(current.puzzle,matrix->solution)){
         int choice;
         printf("Press 1 to enter your next input\n");
         printf("Press 2 to get a hint\n");
         printf("Press 3 to undo a move\n");
-        printf("Press 4 to get the solution of this puzzle\n");
+        printf("Press 4 to save the current progress for later and close\n");
+        printf("Press 5 to get the solution of this puzzle\n");
         printf("Press -1 to quit the game\n");
         printf("\n");
         scanf("%d",&choice);
@@ -369,10 +435,13 @@ void play_sudoku(sudoku *matrix){
             case 1: takeinput(current.puzzle);
             break;
             case 2: get_a_hint(&current,matrix);
+                    numberofhints++;
             break;
             case 3: undo_move(current.puzzle,matrix->puzzle);
             break;
-            case 4: printparallel(current.puzzle,matrix->solution);
+            case 4: save_progress(matrix,&current,numberofhints);
+                    return;
+            case 5: printparallel(current.puzzle,matrix->solution);
                     return;
             break;
             case -1: return;
@@ -381,7 +450,7 @@ void play_sudoku(sudoku *matrix){
         }
         printbox(current.puzzle);
     }
-    printf("Congratulations!\n You have solved the puzzle.\n");
+    printf("Congratulations!\n You have solved the puzzle with %d hints\n",numberofhints);
 }
 void play(){
     sudoku matrix;
@@ -399,7 +468,6 @@ void input(){
             scanf("%d",&matrix.puzzle[i][j]);
         }
     }
-
     while(1){
         int choice;
         printf("Press 1 if you want to solve the inputted puzzle yourself\n");
