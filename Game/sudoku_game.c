@@ -13,13 +13,15 @@ typedef struct{
     char foldername[50];
     char folderpath[50];
 }Folder;
+Folder save_sudoku;
 
-void Folder_init(Folder *f){
-    f->foldername[0]='\0';
-    f->folderpath[0]='\0';
-    strcat(f->foldername,"Progress_Reports");
-    strcat(f->folderpath,"Progress_Reports\\");
+void Folder_init(){
+    save_sudoku.foldername[0]='\0';
+    save_sudoku.folderpath[0]='\0';
+    strcat(save_sudoku.foldername,"Progress_Reports");
+    strcat(save_sudoku.folderpath,"Progress_Reports\\");
 }
+
 void init(sudoku *puzzle){
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
@@ -376,9 +378,6 @@ int take_file_name_from_user(char *file_path,Folder save_sudoku){
     return 0;
 }
 void save_progress(sudoku *matrix,sudoku *current,int numberofhints){
-    Folder save_sudoku;
-    Folder_init(&save_sudoku);
-    
     DIR *d = opendir(save_sudoku.folderpath);
     if(d==NULL){
         int check = mkdir(save_sudoku.foldername);
@@ -456,8 +455,7 @@ void play_sudoku(sudoku *matrix,sudoku *current,int numberofhints){
     printf("Congratulations!\nYou have solved the puzzle with %d hints\n",numberofhints);
 }
 int get_file_location(char *file_path){
-    Folder save_sudoku;
-    Folder_init(&save_sudoku);
+    
     int total_num_files,file_number=0;
     struct dirent *dir;
     DIR *d = opendir(save_sudoku.folderpath);
@@ -468,7 +466,6 @@ int get_file_location(char *file_path){
             if(file_number>2) printf("%d. %s\n",file_number-2,dir->d_name);
         }
         closedir(d);
-    
         total_num_files = file_number-2;
         int choice;
         while(1){
@@ -494,13 +491,10 @@ int get_file_location(char *file_path){
         }
         closedir(d);
     }
-
     return 0;
-
 }
 void open_progress(){
-    char file_path[50];
-    file_path[0]='\0';
+    char file_path[50]="\0";
     int is_file_path_fetched = get_file_location(file_path);
     if(is_file_path_fetched==0){
         printf("There are no saved files\n");
@@ -550,13 +544,20 @@ void play(){
 
 void input(){
     sudoku matrix;
+    printf("Enter the values of the sudoku cells from left to right up to down\n");
+    printf("Enter 0 to indicate a blank space\n\n");
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
             scanf("%d",&matrix.puzzle[i][j]);
-            scanf("%d",&matrix.solution[i][j]);
+            if(matrix.puzzle[i][j]<0 || matrix.puzzle[i][j]>9) {
+                return;
+            }
         }
     }
+    copy_box1_to_box2(matrix.puzzle,matrix.solution);
     solve_sudoku(&matrix,0,0,1,9,1);
+    sudoku current;
+    copy_box1_to_box2(matrix.puzzle,current.puzzle);
     while(1){
         int choice;
         printf("Press 1 if you want to solve the inputted puzzle yourself\n");
@@ -564,10 +565,9 @@ void input(){
         printf("Press -1 to exit\n");
         scanf("%d",&choice);
         switch(choice){
-            case 1: load_and_play_sudoku(&matrix);
+            case 1: play_sudoku(&matrix,&current,0);
             break; 
-            case 2: solve_sudoku(&matrix,0,0,1,9,1);
-                    printbox(matrix.solution);
+            case 2: printbox(matrix.solution);
             break;
             case -1: return;
             default : 
@@ -576,6 +576,7 @@ void input(){
     }
 }
 int main(){
+    Folder_init();
     srand(time(0));
     int choice;
     while(1){
@@ -589,7 +590,7 @@ int main(){
             break;
             case 2: input();
             break;
-            case 3 : open_progress();
+            case 3: open_progress();
             break;
             case -1: goto out;
             default:
