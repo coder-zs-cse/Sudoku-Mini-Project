@@ -4,8 +4,6 @@
 #include<time.h>
 #include<string.h>
 #include<dirent.h>
-
-
 typedef struct {
     int puzzle[9][9];
     int solution[9][9];
@@ -27,35 +25,6 @@ void Folder_init(){
         mkdir(save_sudoku.foldername);
     }
 }
-
-void init(sudoku *puzzle){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            puzzle->puzzle[i][j]=0;
-        }
-    }
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            puzzle->solution[i][j]=0;
-        }
-    }
-}
-void copy_box1_to_box2(int box1[9][9],int box2[9][9]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            box2[i][j]=box1[i][j];
-        }
-    }
-}
-
-void generate_puzzle(sudoku *matrix){
-    int visited[82];
-    for(int i=0;i<=81;i++){
-        visited[i]=1;
-    }
-    puzzle_generator(matrix,visited,81);
-}
-
 void difficulty_mode(sudoku *matrix){
     int k;
     while(1){
@@ -167,13 +136,13 @@ void input(){
         }
     }
 }
+
 #include "printfunctions.h"
 #include "helperfunctions.h"
 #include "algorithms.h"
 #include "filedirectory.h"
+
 int main(){
-    system("clear");
-    system("cls");
     Folder_init();
     srand(time(0));
     int choice;
@@ -188,7 +157,7 @@ int main(){
             break;
             case 2: input();
             break;
-            case 3: open_progress();
+            case 3: open_file_directory();
             break;
             case -1: goto out;
             default:

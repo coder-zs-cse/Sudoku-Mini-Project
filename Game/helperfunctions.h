@@ -71,22 +71,7 @@ int select_random_number(int box[9][9],int numvisited[10],int no_of_num_left){
     numvisited[num]=0;
     return num;
 }
-int select_random_grid(int visited[82],int no_of_grids_left){
-    int n=no_of_grids_left;
-    int number = (rand() % n) + 1;
-    int count1=0,index;
-    for(int it=1;it<=81;it++){
-        if(visited[it]==1){
-            count1++;
-        }
-        if(count1==number){
-            index =it;
-            break;
-        }
-    }
-    visited[index] = 0;
-    return index;
-}
+
 void takeinput(int box[9][9]){
     printf("Enter coordinates and number in format: row col num\n");
     int i,j,num;
@@ -114,4 +99,23 @@ int validinput(int box[9][9],int i,int j,int num){
     if(box[i][j]!=0) return 0;
     if(clash(box,i,j,num)) return 0;
     return 1;
+}
+void init(sudoku *puzzle){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            puzzle->puzzle[i][j]=0;
+        }
+    }
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            puzzle->solution[i][j]=0;
+        }
+    }
+}
+void copy_box1_to_box2(int box1[9][9],int box2[9][9]){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            box2[i][j]=box1[i][j];
+        }
+    }
 }

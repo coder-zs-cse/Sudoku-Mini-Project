@@ -33,6 +33,22 @@ int solve_sudoku(sudoku *matrix,int i,int j,int S,int E,int X){
     return 0;
 }
 
+int select_random_grid(int visited[82],int no_of_grids_left){
+    int n=no_of_grids_left;
+    int number = (rand() % n) + 1;
+    int count1=0,index;
+    for(int it=1;it<=81;it++){
+        if(visited[it]==1){
+            count1++;
+        }
+        if(count1==number){
+            index =it;
+            break;
+        }
+    }
+    visited[index] = 0;
+    return index;
+}
 void puzzle_generator(sudoku *matrix,int visited[82],int steps){
     if(steps==0) return ;
     int index = select_random_grid(visited,steps);
@@ -103,3 +119,12 @@ void undo_move(int box[9][9],int puzzle[9][9]){
         box[i][j] = 0;
     }
 }
+
+void generate_puzzle(sudoku *matrix){
+    int visited[82];
+    for(int i=0;i<=81;i++){
+        visited[i]=1;
+    }
+    puzzle_generator(matrix,visited,81);
+}
+
