@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<conio.h>
 #include<stdlib.h>
 #include<time.h>
 #include<string.h>
@@ -20,6 +21,11 @@ void Folder_init(){
     save_sudoku.folderpath[0]='\0';
     strcat(save_sudoku.foldername,"Progress_Reports");
     strcat(save_sudoku.folderpath,"Progress_Reports\\");
+
+    DIR *dir = opendir(save_sudoku.folderpath);
+    if(dir==NULL){
+        mkdir(save_sudoku.foldername);
+    }
 }
 
 void init(sudoku *puzzle){
@@ -41,207 +47,7 @@ void copy_box1_to_box2(int box1[9][9],int box2[9][9]){
         }
     }
 }
-void printbox(int box[9][9]){
-    for(int i=0;i<3;i++)printf(" ");
-    for(int i=0;i<9;i++){
-        if(i%3==0) printf("  ");
-        printf("%d ",i);
-    }
-    printf("\n");
-    for(int i=0;i<15;i++) {
-        printf("_ ");
-    }
-    printf("\n");
-    for(int i=0;i<9;i++){
-        printf("%d |  ",i);
-        for(int j=0;j<9;j++){
-            if(box[i][j]!=0)
-            printf("%d ",box[i][j]);
-            else printf("_ ");
-            if(j!=8 && j%3==2) printf("| ");
-        }
-        if(i!=8 && i%3==2) {
-        printf("\n");
-            for(int x=0;x<26;x++) printf("-");
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-void printparallel(int box1[9][9],int box2[9][9]){
-    for(int i=0;i<3;i++)printf(" ");
-    for(int i=0;i<9;i++){
-        if(i%3==0) printf("  ");
-        printf("%d ",i);
-    }
-    printf("    ");
-    for(int i=0;i<3;i++)printf(" ");
-    for(int i=0;i<9;i++){
-        if(i%3==0) printf("  ");
-        printf("%d ",i);
-    }
-    printf("\n");
-    for(int i=0;i<14;i++) {
-        printf("_ ");
-    }
-    printf("   ");
-    for(int i=0;i<15;i++) {
-        printf("_ ");
-    }
-    printf("\n");
-    for(int i=0;i<9;i++){
-        printf("%d |  ",i);
-        for(int j=0;j<9;j++){
-            if(box1[i][j]!=0)
-            printf("%d ",box1[i][j]);
-            else printf("_ ");
-            if(j!=8 && j%3==2) printf("| ");
-        }
-        printf("    ");
-        printf("%d |  ",i);
-        for(int j=0;j<9;j++){
-            if(box2[i][j]!=0)
-            printf("%d ",box2[i][j]);
-            else printf("_ ");
-            if(j!=8 && j%3==2) printf("| ");
-        }
-        if(i!=8 && i%3==2) {
-        printf("\n");
-            for(int x=0;x<26;x++) printf("-");
-            printf("    ");
-            for(int x=0;x<26;x++) printf("-");
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-int rowclash(int box[9][9],int i,int j,int num){
-    for(int col=0; col<9;col++){
-        if(col!=j && box[i][col]==num) return 1;
-    }
-    return 0;
-}
-int columnclash(int box[9][9],int i,int j,int num){
-    for(int row=0; row<9;row++){
-        if(row!=i && box[row][j]==num) return 1;
-    }
-    return 0;
-}
-int boxclash(int box[9][9],int i,int j,int num){
-    int xcor[5] = {-2,-1,0,1,2};
-    int ycor[5] = {-2,-1,0,1,2};
-    int xll =  2 - i%3 ; // x lower limit
-    int xul =  4 - i%3 ; // x upper limit
-    int yll =  2 - j%3 ; // y lower limit
-    int yul =  4 - j%3 ; // y upper limit
-    
-    for(int x = xll ; x <= xul;x++){
-        int xnew = i + xcor[x];
-        for(int y = yll ; y <= yul;y++){
-            int ynew = j + ycor[y];
-            if(!(xnew==i && ynew==j)&& box[xnew][ynew]==num) return 1;
-        }
-    }
-    return 0;
-}
-int clash(int box[9][9],int i,int j,int num){
-    if(rowclash(box,i,j,num)) return 1;
-    if(columnclash(box,i,j,num)) return 1;
-    if(boxclash(box,i,j,num)) return 1;
-    return 0;
-}
-int is_box1_equal_to_box2(int box1[9][9],int box2[9][9]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(box1[i][j]!=box2[i][j]) return 0;
-        }
-    }
-    return 1; //if all elements are equal then both are duplicates
-}
-int isvalidsudoku(int box[9][9]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(box[i][j]!=0){
-                if(clash(box,i,j,box[i][j])){
-                    return 0;
-                }
-            }
-        }
-    }
-    return 1;
-}
-int select_random_number(int box[9][9],int numvisited[10],int no_of_num_left){
-    int n=no_of_num_left;
-    int num = (rand()%n) +1;
-    int count=0;
-    for(int i=1;i<=9;i++){
-        if(numvisited[i]==1){
-            count++;
-        }
-        if(count==num){
-            num = i;
-            break;
-        }
-    }
-    numvisited[num]=0;
-    return num;
-}
-int select_random_grid(int visited[82],int no_of_grids_left){
-    int n=no_of_grids_left;
-    int number = (rand() % n) + 1;
-    int count1=0,index;
-    for(int it=1;it<=81;it++){
-        if(visited[it]==1){
-            count1++;
-        }
-        if(count1==number){
-            index =it;
-            break;
-        }
-    }
-    visited[index] = 0;
-    return index;
-}
-int solve_sudoku(sudoku *matrix,int i,int j,int S,int E,int X){
-    if(i==8 && j==9)  {
-        return 1;
-    }
-    if(j==9)  return solve_sudoku(matrix,i+1,0,S,E,X);
-    if(matrix->solution[i][j]!=0) return solve_sudoku(matrix,i,j+1,S,E,X);
-    
-    for(int num = S;num != E + X;num = num + X){
-        if(!clash(matrix->solution,i,j,num)){
-            matrix->solution[i][j]=num;
-            if(solve_sudoku(matrix,i,j+1,S,E,X)){
-                return 1;
-            }
-            matrix->solution[i][j]=0;
-        }
-    }
-    return 0;
-}
-int unique_solution(int box[9][9]){
-    sudoku tempbox1;
-    sudoku tempbox2;
-    copy_box1_to_box2(box,tempbox1.solution);
-    copy_box1_to_box2(box,tempbox2.solution);
-    solve_sudoku(&tempbox1,0,0,1,9,1);
-    solve_sudoku(&tempbox2,0,0,9,1,-1);
-    if(is_box1_equal_to_box2(tempbox1.solution,tempbox2.solution)) return 1; //if both solutions are equal, that means unique solution
-    return 0;
-}
-void puzzle_generator(sudoku *matrix,int visited[82],int steps){
-    if(steps==0) return ;
-    int index = select_random_grid(visited,steps);
-    int x = (index-1)/9;
-    int y = (index-1)%9;
-    int store = matrix->puzzle[x][y];
-    matrix->puzzle[x][y] = 0;
-    if(!unique_solution(matrix->puzzle)){
-        matrix->puzzle[x][y]=store;    //restore 
-    }
-    puzzle_generator(matrix,visited,steps-1);
-}
+
 void generate_puzzle(sudoku *matrix){
     int visited[82];
     for(int i=0;i<=81;i++){
@@ -249,98 +55,7 @@ void generate_puzzle(sudoku *matrix){
     }
     puzzle_generator(matrix,visited,81);
 }
-void diagonal_solve(sudoku *puzzle){
-    for(int diag =0 ;diag<=6;diag+=3){
-        int numvisited[10];
-        int cellvisited[10];
-        for(int i=0;i<10;i++){
-            numvisited[i] = cellvisited[i] = 1;
-        }
-        for(int emptyboxes=9;emptyboxes>=1;emptyboxes--){
-            int cell = select_random_number(puzzle->solution,cellvisited,emptyboxes);
-            int num = select_random_number(puzzle->solution,numvisited,emptyboxes);
-            int x = (cell-1)/3;
-            int y = (cell-1)%3;
-            puzzle->solution[diag+x][diag+y] = num;
-        }
-    }
-}
-int validinput(int box[9][9],int i,int j,int num){
-    if(num<1 || num>9) return 0;
-    if(box[i][j]!=0) return 0;
-    if(clash(box,i,j,num)) return 0;
-    return 1;
-}
-void get_a_hint(sudoku *current,sudoku *matrix){
-    int count=0;
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(current->puzzle[i][j]==0) count++;
-        }
-    }  
-    int number = rand()%count +1;
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(current->puzzle[i][j]==0) number--;
-            if(number==0){
-                printf("At (%d,%d) the number is %d\n",i,j,matrix->solution[i][j]);
-                current->puzzle[i][j] = matrix->solution[i][j];
-                return;
-            }
-        }
-    }
 
-}
-void undo_move(int box[9][9],int puzzle[9][9]){
-    printparallel(box,puzzle);
-    printf("Sudoku given on right side is the puzzle question\n");
-    int i,j;
-    printf("Enter the coordinates of your input where you want to erase\n");
-    scanf("%d%d",&i,&j);
-    if(puzzle[i][j]!=0){
-        printf("Invalid coordinates!\n Chosen coordinates are not inputted by user by are part of puzzle\n");
-    }
-    else if(box[i][j]==0){
-        printf("Chosen coordinates is already blank\n");
-    }
-    else{
-        box[i][j] = 0;
-    }
-}
-void takeinput(int box[9][9]){
-    printf("Enter coordinates and number in format: row col num\n");
-    int i,j,num;
-    scanf("%d%d %d",&i,&j,&num);
-    if(validinput(box,i,j,num)){
-        box[i][j]=num;
-    }
-    else{
-        printf("Invalid entry! Try again\n");
-    }
-
-}
-void fill_k_empty_boxes(sudoku *matrix,int k){
-    int total_empty_boxes=0;
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
-            if(matrix->puzzle[i][j]==0) total_empty_boxes++;
-        }
-    }  
-    while(k--){
-        int number = rand()%total_empty_boxes +1;
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                if(matrix->puzzle[i][j]==0) number--;
-                if(number==0){
-                    matrix->puzzle[i][j] = matrix->solution[i][j];
-                    goto out;
-                }
-            }
-        }
-        out:
-        total_empty_boxes--;
-    }
-}
 void difficulty_mode(sudoku *matrix){
     int k;
     while(1){
@@ -364,62 +79,7 @@ void difficulty_mode(sudoku *matrix){
     out:
     fill_k_empty_boxes(matrix,k);
 }
-int take_file_name_from_user(char *file_path,Folder save_sudoku){
 
-    char name[50];
-    printf("Please enter a label to save your progress file with\n");
-    scanf("%s",name);
-    strcat(name,".txt");
-    file_path[0]='\0';
-    strcat(file_path,save_sudoku.folderpath);
-    strcat(file_path,name);
-    FILE *temp = fopen(file_path,"r");
-    if(temp!=NULL) return 1;
-    return 0;
-}
-void save_progress(sudoku *matrix,sudoku *current,int numberofhints){
-    DIR *d = opendir(save_sudoku.folderpath);
-    if(d==NULL){
-        int check = mkdir(save_sudoku.foldername);
-        d = opendir(save_sudoku.folderpath);
-    }
-    FILE *pointer;
-    char file_path[50];
-    int file_already_present;
-    do{
-        file_already_present =take_file_name_from_user(file_path,save_sudoku);
-        if(file_already_present==1){
-            printf("There already exists a file with this name\n");
-            printf("Please enter a new label\n");
-        }
-    }while(file_already_present!=0);
-    pointer = fopen(file_path,"w+");
-
-    if(!pointer){
-        printf("Couldn't save the progress due to a file error\n");
-    }
-    else{
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                fprintf(pointer,"%d ",matrix->puzzle[i][j]);
-            }
-        }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                fprintf(pointer,"%d ",matrix->solution[i][j]);
-            }
-        }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                fprintf(pointer,"%d ",current->puzzle[i][j]);
-            }
-        }
-        fprintf(pointer,"%d ",numberofhints);
-        fclose(pointer);
-    }
-    fclose(pointer);
-    closedir(d);
-}
 void play_sudoku(sudoku *matrix,sudoku *current,int numberofhints){
     
     while(!is_box1_equal_to_box2(current->puzzle,matrix->solution)){
@@ -447,83 +107,14 @@ void play_sudoku(sudoku *matrix,sudoku *current,int numberofhints){
             break;
             case -1: return;
             break;
-            defult: printf("Invalid entry, Please check menu\n");
+            default: printf("Invalid entry, Please check menu\n");
         }
         printbox(current->puzzle);
         printf("Hints taken so far : %d\n",numberofhints);
     }
     printf("Congratulations!\nYou have solved the puzzle with %d hints\n",numberofhints);
 }
-int get_file_location(char *file_path){
-    
-    int total_num_files,file_number=0;
-    struct dirent *dir;
-    DIR *d = opendir(save_sudoku.folderpath);
-    if(d==NULL) return 0;
-    else{
-        while((dir=readdir(d))!=NULL){
-            file_number++;
-            if(file_number>2) printf("%d. %s\n",file_number-2,dir->d_name);
-        }
-        closedir(d);
-        total_num_files = file_number-2;
-        int choice;
-        while(1){
-            printf("\n\n");
-            printf("Enter the sudoku saved progress file number you want to load\n");
-            scanf("%d",&choice);
-            if(choice<1 || choice>total_num_files){
-                printf("Invalid entry please enter the correct file number\n");
-            }
-            else{
-               break;
-            }
-        }
-        d = opendir(save_sudoku.folderpath);
-        while((dir=readdir(d))!=NULL){
-            choice--;
-            if(choice==-2){
-                strcat(file_path,save_sudoku.folderpath);
-                strcat(file_path,dir->d_name);
-                closedir(d);
-                return 1;
-            }
-        }
-        closedir(d);
-    }
-    return 0;
-}
-void open_progress(){
-    char file_path[50]="\0";
-    int is_file_path_fetched = get_file_location(file_path);
-    if(is_file_path_fetched==0){
-        printf("There are no saved files\n");
-    }
-    else{
-        sudoku matrix,current;
-        int numberofhints=0;
-        FILE *pointer = fopen(file_path,"r");
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                fscanf(pointer,"%d",&matrix.puzzle[i][j]);
-            }
-        }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                fscanf(pointer,"%d",&matrix.solution[i][j]);
-            }
-        }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
-                fscanf(pointer,"%d",&current.puzzle[i][j]);
-            }
-        }
-        fscanf(pointer,"%d",&numberofhints);
-        fclose(pointer);
-        printbox(current.puzzle);
-        play_sudoku(&matrix,&current,numberofhints);
-    }
-}
+
 void load_and_play_sudoku(sudoku *matrix){
     difficulty_mode(matrix);
     printbox(matrix->puzzle);
@@ -549,10 +140,11 @@ void input(){
     for(int i=0;i<9;i++){
         for(int j=0;j<9;j++){
             scanf("%d",&matrix.puzzle[i][j]);
-            if(matrix.puzzle[i][j]<0 || matrix.puzzle[i][j]>9) {
-                return;
-            }
         }
+    }
+    if(!isvalidsudoku(matrix.puzzle)){
+        printf("\nInputted sudoku is incorrect\n");
+        return;
     }
     copy_box1_to_box2(matrix.puzzle,matrix.solution);
     solve_sudoku(&matrix,0,0,1,9,1);
@@ -565,17 +157,23 @@ void input(){
         printf("Press -1 to exit\n");
         scanf("%d",&choice);
         switch(choice){
-            case 1: play_sudoku(&matrix,&current,0);
-            break; 
+            case 1: 
+                    printbox(current.puzzle);
+                    play_sudoku(&matrix,&current,0);
             case 2: printbox(matrix.solution);
-            break;
             case -1: return;
             default : 
             printf("Invalid entry, please check the menu and retry again\n");
         }
     }
 }
+#include "printfunctions.h"
+#include "helperfunctions.h"
+#include "algorithms.h"
+#include "filedirectory.h"
 int main(){
+    system("clear");
+    system("cls");
     Folder_init();
     srand(time(0));
     int choice;

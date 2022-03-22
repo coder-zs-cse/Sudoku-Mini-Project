@@ -1,0 +1,74 @@
+void printbox(int box[9][9]){
+    for(int i=0;i<3;i++)printf(" ");
+    for(int i=0;i<9;i++){
+        if(i%3==0) printf("  ");
+        printf("%d ",i);
+    }
+    printf("\n");
+    for(int i=0;i<15;i++) {
+        printf("_ ");
+    }
+    printf("\n");
+    for(int i=0;i<9;i++){
+        printf("%d |  ",i);
+        for(int j=0;j<9;j++){
+            if(box[i][j]!=0)
+            printf("%d ",box[i][j]);
+            else printf("_ ");
+            if(j!=8 && j%3==2) printf("| ");
+        }
+        if(i!=8 && i%3==2) {
+        printf("\n");
+            for(int x=0;x<26;x++) printf("-");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+void printparallel(int box1[9][9],int box2[9][9]){
+    for(int i=0;i<3;i++)printf(" ");
+    for(int i=0;i<9;i++){
+        if(i%3==0) printf("  ");
+        printf("%d ",i);
+    }
+    printf("    ");
+    for(int i=0;i<3;i++)printf(" ");
+    for(int i=0;i<9;i++){
+        if(i%3==0) printf("  ");
+        printf("%d ",i);
+    }
+    printf("\n");
+    for(int i=0;i<14;i++) {
+        printf("_ ");
+    }
+    printf("   ");
+    for(int i=0;i<15;i++) {
+        printf("_ ");
+    }
+    printf("\n");
+    for(int i=0;i<9;i++){
+        printf("%d |  ",i);
+        for(int j=0;j<9;j++){
+            if(box1[i][j]!=0)
+            printf("%d ",box1[i][j]);
+            else printf("_ ");
+            if(j!=8 && j%3==2) printf("| ");
+        }
+        printf("    ");
+        printf("%d |  ",i);
+        for(int j=0;j<9;j++){
+            if(box2[i][j]!=0)
+            printf("%d ",box2[i][j]);
+            else printf("_ ");
+            if(j!=8 && j%3==2) printf("| ");
+        }
+        if(i!=8 && i%3==2) {
+        printf("\n");
+            for(int x=0;x<26;x++) printf("-");
+            printf("    ");
+            for(int x=0;x<26;x++) printf("-");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
