@@ -1,22 +1,33 @@
-int rowclash(int box[9][9],int i,int j,int num){
-    for(int col=0; col<9;col++){
+int rowclash(int box[N][N],int i,int j,int num){
+    for(int col=0; col<N;col++){
         if(col!=j && box[i][col]==num) return 1;
     }
     return 0;
 }
-int columnclash(int box[9][9],int i,int j,int num){
-    for(int row=0; row<9;row++){
+int columnclash(int box[N][N],int i,int j,int num){
+    for(int row=0; row<N;row++){
         if(row!=i && box[row][j]==num) return 1;
     }
     return 0;
 }
-int boxclash(int box[9][9],int i,int j,int num){
-    int xcor[5] = {-2,-1,0,1,2};
-    int ycor[5] = {-2,-1,0,1,2};
-    int xll =  2 - i%3 ; // x lower limit
-    int xul =  4 - i%3 ; // x upper limit
-    int yll =  2 - j%3 ; // y lower limit
-    int yul =  4 - j%3 ; // y upper limit
+int boxclash(int box[N][N],int i,int j,int num){
+    int xcor[2*M-1],ycor[2*M-1];
+    for(int i=0;i<2*M-1;i++){
+        xcor[i] = i - M + 1;
+        ycor[i] = i - M + 1;
+    }
+    // for(int i=0;i<2*M-1;i++){
+    //     printf("%d ",xcor[i]);
+    // }
+    // printf("\n");
+    // for(int i=0;i<2*M-1;i++){
+    //     printf("%d ",ycor[i]);
+    // }
+    // printf("\n");
+    int xll =  M-1 - i%M ; // x lower limit
+    int xul =  M+1 - i%M; // x upper limit
+    int yll =  M-1 - j%M ; // y lower limit
+    int yul =  M+1 - j%M ; // y upper limit
     
     for(int x = xll ; x <= xul;x++){
         int xnew = i + xcor[x];
@@ -27,26 +38,26 @@ int boxclash(int box[9][9],int i,int j,int num){
     }
     return 0;
 }
-int clash(int box[9][9],int i,int j,int num){
+int clash(int box[N][N],int i,int j,int num){
     if(rowclash(box,i,j,num)) return 1;
     if(columnclash(box,i,j,num)) return 1;
     if(boxclash(box,i,j,num)) return 1;
     return 0;
 }
-int is_box1_equal_to_box2(int box1[9][9],int box2[9][9]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+int is_box1_equal_to_box2(int box1[N][N],int box2[N][N]){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             if(box1[i][j]!=box2[i][j]) return 0;
         }
     }
     return 1; //if all elements are equal then both are duplicates
 }
-int isvalidsudoku(int box[9][9]){
+int isvalidsudoku(int box[N][N]){
 
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             if(box[i][j]!=0){
-                if(box[i][j]<0 || box[i][j]>9) return 0;
+                if(box[i][j]<0 || box[i][j]>N) return 0;
                 if(clash(box,i,j,box[i][j])){
                     return 0;
                 }
@@ -55,11 +66,11 @@ int isvalidsudoku(int box[9][9]){
     }
     return 1;
 }
-int select_random_number(int box[9][9],int numvisited[10],int no_of_num_left){
+int select_random_number(int box[N][N],int numvisited[N+1],int no_of_num_left){
     int n=no_of_num_left;
     int num = (rand()%n) +1;
     int count=0;
-    for(int i=1;i<=9;i++){
+    for(int i=1;i<=N;i++){
         if(numvisited[i]==1){
             count++;
         }
@@ -72,7 +83,7 @@ int select_random_number(int box[9][9],int numvisited[10],int no_of_num_left){
     return num;
 }
 
-void takeinput(int box[9][9]){
+void takeinput(int box[N][N]){
     printf("Enter coordinates and number in format: row col num\n");
     int i,j,num;
     scanf("%d%d %d",&i,&j,&num);
@@ -84,37 +95,38 @@ void takeinput(int box[9][9]){
     }
 
 }
-int unique_solution(int box[9][9]){
+int unique_solution(int box[N][N]){
     sudoku tempbox1;
     sudoku tempbox2;
     copy_box1_to_box2(box,tempbox1.solution);
     copy_box1_to_box2(box,tempbox2.solution);
-    solve_sudoku(&tempbox1,0,0,1,9,1);
-    solve_sudoku(&tempbox2,0,0,9,1,-1);
-    if(is_box1_equal_to_box2(tempbox1.solution,tempbox2.solution)) return 1; //if both solutions are equal, that means unique solution
+    solve_sudoku(&tempbox1,0,0,1,N,1);
+    solve_sudoku(&tempbox2,0,0,N,1,-1);
+    if(is_box1_equal_to_box2(tempbox1.solution,tempbox2.solution)) 
+        return 1; //if both solutions are equal, that means unique solution
     return 0;
 }
-int validinput(int box[9][9],int i,int j,int num){
-    if(num<1 || num>9) return 0;
+int validinput(int box[N][N],int i,int j,int num){
+    if(num<1 || num>N) return 0;
     if(box[i][j]!=0) return 0;
     if(clash(box,i,j,num)) return 0;
     return 1;
 }
 void init(sudoku *puzzle){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             puzzle->puzzle[i][j]=0;
         }
     }
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             puzzle->solution[i][j]=0;
         }
     }
 }
-void copy_box1_to_box2(int box1[9][9],int box2[9][9]){
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+void copy_box1_to_box2(int box1[N][N],int box2[N][N]){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             box2[i][j]=box1[i][j];
         }
     }

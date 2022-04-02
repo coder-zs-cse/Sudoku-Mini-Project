@@ -69,18 +69,18 @@ void open_progress(int total_num_of_files){
     sudoku matrix,current;
     int numberofhints=0;
     FILE *pointer = fopen(file_path,"r");
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             fscanf(pointer,"%d",&matrix.puzzle[i][j]);
         }
     }
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             fscanf(pointer,"%d",&matrix.solution[i][j]);
         }
     }
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             fscanf(pointer,"%d",&current.puzzle[i][j]);
         }
     }
@@ -112,18 +112,18 @@ void save_progress(sudoku *matrix,sudoku *current,int numberofhints){
         printf("Couldn't save the progress due to a file error\n");
     }
     else{
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
                 fprintf(pointer,"%d ",matrix->puzzle[i][j]);
             }
         }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
                 fprintf(pointer,"%d ",matrix->solution[i][j]);
             }
         }
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
                 fprintf(pointer,"%d ",current->puzzle[i][j]);
             }
         }
@@ -149,6 +149,7 @@ void delete_saved_file(int total_num_file){
         }
         char file_path[50]="\0";
         get_file_location(file_path,choice,total_num_file);
+        remove(file_path);
     }
 }
 

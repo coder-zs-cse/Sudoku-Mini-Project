@@ -1,7 +1,7 @@
-void printbox(int box[9][9]){
-    for(int i=0;i<3;i++)printf(" ");
-    for(int i=0;i<9;i++){
-        if(i%3==0) printf("  ");
+void printbox(int box[N][N]){
+    for(int i=0;i<M;i++)printf(" ");
+    for(int i=0;i<N;i++){
+        if(i%M==0) printf("  ");
         printf("%d ",i);
     }
     printf("\n");
@@ -9,15 +9,15 @@ void printbox(int box[9][9]){
         printf("_ ");
     }
     printf("\n");
-    for(int i=0;i<9;i++){
+    for(int i=0;i<N;i++){
         printf("%d |  ",i);
-        for(int j=0;j<9;j++){
+        for(int j=0;j<N;j++){
             if(box[i][j]!=0)
             printf("%d ",box[i][j]);
             else printf("_ ");
-            if(j!=8 && j%3==2) printf("| ");
+            if(j!=N-1 && j%M==M-1) printf("| ");
         }
-        if(i!=8 && i%3==2) {
+        if(i!=N-1 && i%M==M-1) {
         printf("\n");
             for(int x=0;x<26;x++) printf("-");
         }
@@ -25,16 +25,16 @@ void printbox(int box[9][9]){
     }
     printf("\n");
 }
-void printparallel(int box1[9][9],int box2[9][9]){
-    for(int i=0;i<3;i++)printf(" ");
-    for(int i=0;i<9;i++){
-        if(i%3==0) printf("  ");
+void printparallel(int box1[N][N],int box2[N][N]){
+    for(int i=0;i<M;i++)printf(" ");
+    for(int i=0;i<N;i++){
+        if(i%M==0) printf("  ");
         printf("%d ",i);
     }
     printf("    ");
-    for(int i=0;i<3;i++)printf(" ");
-    for(int i=0;i<9;i++){
-        if(i%3==0) printf("  ");
+    for(int i=0;i<M;i++)printf(" ");
+    for(int i=0;i<N;i++){
+        if(i%M==0) printf("  ");
         printf("%d ",i);
     }
     printf("\n");
@@ -46,21 +46,21 @@ void printparallel(int box1[9][9],int box2[9][9]){
         printf("_ ");
     }
     printf("\n");
-    for(int i=0;i<9;i++){
+    for(int i=0;i<N;i++){
         printf("%d |  ",i);
-        for(int j=0;j<9;j++){
+        for(int j=0;j<N;j++){
             if(box1[i][j]!=0)
             printf("%d ",box1[i][j]);
             else printf("_ ");
-            if(j!=8 && j%3==2) printf("| ");
+            if(j!=N-1 && j%M==M-1) printf("| ");
         }
         printf("    ");
         printf("%d |  ",i);
-        for(int j=0;j<9;j++){
+        for(int j=0;j<N;j++){
             if(box2[i][j]!=0)
             printf("%d ",box2[i][j]);
             else printf("_ ");
-            if(j!=8 && j%3==2) printf("| ");
+            if(j!=N-1 && j%M==M-1) printf("| ");
         }
         if(i!=8 && i%3==2) {
         printf("\n");

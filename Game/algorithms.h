@@ -1,30 +1,44 @@
+// int select_random_number(int box[N][N],int numvisited[N+1],int no_of_num_left){
+//     int n=no_of_num_left;
+//     int num = (rand()%n) +1;
+//     int count=0;
+//     for(int i=1;i<=N;i++){
+//         if(numvisited[i]==1){
+//             count++;
+//         }
+//         if(count==num){
+//             num = i;
+//             break;
+//         }
+//     }
+//     numvisited[num]=0;
+//     return num;
+// }
 void diagonal_solve(sudoku *puzzle){
-    for(int diag =0 ;diag<=6;diag+=3){
-        int numvisited[10];
-        int cellvisited[10];
-        for(int i=0;i<10;i++){
+    for(int diag =0;diag<N;diag+=M){
+        int numvisited[N+1];
+        int cellvisited[N+1];
+        for(int i=0;i<=N;i++){
             numvisited[i] = cellvisited[i] = 1;
         }
-        for(int emptyboxes=9;emptyboxes>=1;emptyboxes--){
+        for(int emptyboxes=N;emptyboxes>=1;emptyboxes--){
             int cell = select_random_number(puzzle->solution,cellvisited,emptyboxes);
             int num = select_random_number(puzzle->solution,numvisited,emptyboxes);
-            int x = (cell-1)/3;
-            int y = (cell-1)%3;
+            int x = (cell-1)/M;
+            int y = (cell-1)%M;
             puzzle->solution[diag+x][diag+y] = num;
         }
     }
 }
-int solve_sudoku(sudoku *matrix,int i,int j,int S,int E,int X){
-    if(i==8 && j==9)  {
-        return 1;
-    }
-    if(j==9)  return solve_sudoku(matrix,i+1,0,S,E,X);
-    if(matrix->solution[i][j]!=0) return solve_sudoku(matrix,i,j+1,S,E,X);
-    
-    for(int num = S;num != E + X;num = num + X){
+int solve_sudoku(sudoku *matrix,int i,int j,int S,int E,int T){
+    if(i==N)  return 1;
+    if(j==N)  return solve_sudoku(matrix,i+1,0,S,E,T);
+    if(matrix->solution[i][j]!=0) return solve_sudoku(matrix,i,j+1,S,E,T);
+    // printbox(matrix->solution);
+    for(int num = S;num != E + T;num = num + T){
         if(!clash(matrix->solution,i,j,num)){
             matrix->solution[i][j]=num;
-            if(solve_sudoku(matrix,i,j+1,S,E,X)){
+            if(solve_sudoku(matrix,i,j+1,S,E,T)){
                 return 1;
             }
             matrix->solution[i][j]=0;
@@ -33,11 +47,11 @@ int solve_sudoku(sudoku *matrix,int i,int j,int S,int E,int X){
     return 0;
 }
 
-int select_random_grid(int visited[82],int no_of_grids_left){
+int select_random_grid(int visited[N*N+1],int no_of_grids_left){
     int n=no_of_grids_left;
     int number = (rand() % n) + 1;
     int count1=0,index;
-    for(int it=1;it<=81;it++){
+    for(int it=1;it<=N*N;it++){
         if(visited[it]==1){
             count1++;
         }
@@ -49,11 +63,11 @@ int select_random_grid(int visited[82],int no_of_grids_left){
     visited[index] = 0;
     return index;
 }
-void puzzle_generator(sudoku *matrix,int visited[82],int steps){
+void puzzle_generator(sudoku *matrix,int visited[N*N+1],int steps){
     if(steps==0) return ;
     int index = select_random_grid(visited,steps);
-    int x = (index-1)/9;
-    int y = (index-1)%9;
+    int x = (index-1)/N;
+    int y = (index-1)%N;
     int store = matrix->puzzle[x][y];
     matrix->puzzle[x][y] = 0;
     if(!unique_solution(matrix->puzzle)){
@@ -63,15 +77,15 @@ void puzzle_generator(sudoku *matrix,int visited[82],int steps){
 }
 void fill_k_empty_boxes(sudoku *matrix,int k){
     int total_empty_boxes=0;
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             if(matrix->puzzle[i][j]==0) total_empty_boxes++;
         }
     }  
     while(k--){
         int number = rand()%total_empty_boxes +1;
-        for(int i=0;i<9;i++){
-            for(int j=0;j<9;j++){
+        for(int i=0;i<N;i++){
+            for(int j=0;j<N;j++){
                 if(matrix->puzzle[i][j]==0) number--;
                 if(number==0){
                     matrix->puzzle[i][j] = matrix->solution[i][j];
@@ -85,14 +99,14 @@ void fill_k_empty_boxes(sudoku *matrix,int k){
 }
 void get_a_hint(sudoku *current,sudoku *matrix){
     int count=0;
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             if(current->puzzle[i][j]==0) count++;
         }
     }  
     int number = rand()%count +1;
-    for(int i=0;i<9;i++){
-        for(int j=0;j<9;j++){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
             if(current->puzzle[i][j]==0) number--;
             if(number==0){
                 printf("At (%d,%d) the number is %d\n",i,j,matrix->solution[i][j]);
@@ -103,7 +117,7 @@ void get_a_hint(sudoku *current,sudoku *matrix){
     }
 
 }
-void undo_move(int box[9][9],int puzzle[9][9]){
+void erase_input(int box[N][N],int puzzle[N][N]){
     printparallel(box,puzzle);
     printf("Sudoku given on right side is the puzzle question\n");
     int i,j;
@@ -121,10 +135,10 @@ void undo_move(int box[9][9],int puzzle[9][9]){
 }
 
 void generate_puzzle(sudoku *matrix){
-    int visited[82];
-    for(int i=0;i<=81;i++){
+    int visited[N*N+1];
+    for(int i=0;i<=N*N;i++){
         visited[i]=1;
     }
-    puzzle_generator(matrix,visited,81);
+    puzzle_generator(matrix,visited,N*N);
 }
 
