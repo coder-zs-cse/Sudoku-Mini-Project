@@ -1,19 +1,4 @@
-// int select_random_number(int box[N][N],int numvisited[N+1],int no_of_num_left){
-//     int n=no_of_num_left;
-//     int num = (rand()%n) +1;
-//     int count=0;
-//     for(int i=1;i<=N;i++){
-//         if(numvisited[i]==1){
-//             count++;
-//         }
-//         if(count==num){
-//             num = i;
-//             break;
-//         }
-//     }
-//     numvisited[num]=0;
-//     return num;
-// }
+
 void diagonal_solve(sudoku *puzzle){
     for(int diag =0;diag<N;diag+=M){
         int numvisited[N+1];
@@ -34,7 +19,6 @@ int solve_sudoku(sudoku *matrix,int i,int j,int S,int E,int T){
     if(i==N)  return 1;
     if(j==N)  return solve_sudoku(matrix,i+1,0,S,E,T);
     if(matrix->solution[i][j]!=0) return solve_sudoku(matrix,i,j+1,S,E,T);
-    // printbox(matrix->solution);
     for(int num = S;num != E + T;num = num + T){
         if(!clash(matrix->solution,i,j,num)){
             matrix->solution[i][j]=num;
@@ -45,6 +29,19 @@ int solve_sudoku(sudoku *matrix,int i,int j,int S,int E,int T){
         }
     }
     return 0;
+}
+int number_of_soln(sudoku *matrix,int i,int j,int S,int E,int T){
+    if(i==N)  return 1;
+    if(j==N)  return solve_sudoku(matrix,i+1,0,S,E,T);
+    if(matrix->solution[i][j]!=0) return solve_sudoku(matrix,i,j+1,S,E,T);
+    int output=0;
+    for(int num = S;num != E + T;num = num + T){
+        if(!clash(matrix->solution,i,j,num)){
+            matrix->solution[i][j]=num;
+            output+=solve_sudoku(matrix,i,j+1,S,E,T);
+        }
+    }
+    return output;
 }
 
 int select_random_grid(int visited[N*N+1],int no_of_grids_left){

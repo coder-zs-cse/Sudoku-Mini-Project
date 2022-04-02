@@ -43,6 +43,8 @@ void printparallel(int box1[N][N],int box2[N][N]);
 void printbox(int box[N][N]);
 int is_box1_equal_to_box2(int box1[N][N],int box2[N][N]);
 int solve_sudoku(sudoku*,int,int,int,int,int);
+int number_of_soln(sudoku*,int,int,int,int,int);
+
 int isvalidsudoku(int box[N][N]);
 void difficulty_mode(sudoku*);
 void play_sudoku(sudoku*,sudoku*,int);

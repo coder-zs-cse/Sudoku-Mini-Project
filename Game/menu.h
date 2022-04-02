@@ -65,6 +65,7 @@ void load_and_play_sudoku(sudoku *matrix){
     int numberofhints=0;
     play_sudoku(matrix,&current,numberofhints);
 }
+
 void play(){
     sudoku matrix;
     init(&matrix);

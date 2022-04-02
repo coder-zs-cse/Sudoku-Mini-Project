@@ -1,3 +1,14 @@
+void print(int box[N][N]){
+    for(int i=0;i<N;i++)
+    {
+        for(int j=0;j<N;j++) printf("%d ",box[i][j]);
+        printf("\n");
+    }
+    printf("\n");
+    
+}
+
+
 void printbox(int box[N][N]){
     for(int i=0;i<M;i++)printf(" ");
     for(int i=0;i<N;i++){
@@ -13,8 +24,8 @@ void printbox(int box[N][N]){
         printf("%d |  ",i);
         for(int j=0;j<N;j++){
             if(box[i][j]!=0)
-            printf("%d ",box[i][j]);
-            else printf("_ ");
+            printf("%d  ",box[i][j]);
+            else printf("_  ");
             if(j!=N-1 && j%M==M-1) printf("| ");
         }
         if(i!=N-1 && i%M==M-1) {

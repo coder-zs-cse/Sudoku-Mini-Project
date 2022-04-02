@@ -16,18 +16,10 @@ int boxclash(int box[N][N],int i,int j,int num){
         xcor[i] = i - M + 1;
         ycor[i] = i - M + 1;
     }
-    // for(int i=0;i<2*M-1;i++){
-    //     printf("%d ",xcor[i]);
-    // }
-    // printf("\n");
-    // for(int i=0;i<2*M-1;i++){
-    //     printf("%d ",ycor[i]);
-    // }
-    // printf("\n");
     int xll =  M-1 - i%M ; // x lower limit
-    int xul =  M+1 - i%M; // x upper limit
+    int xul =  2*(M-1) - i%M; // x upper limit
     int yll =  M-1 - j%M ; // y lower limit
-    int yul =  M+1 - j%M ; // y upper limit
+    int yul =  2*(M-1) - j%M ; // y upper limit
     
     for(int x = xll ; x <= xul;x++){
         int xnew = i + xcor[x];
@@ -96,15 +88,20 @@ void takeinput(int box[N][N]){
 
 }
 int unique_solution(int box[N][N]){
-    sudoku tempbox1;
-    sudoku tempbox2;
-    copy_box1_to_box2(box,tempbox1.solution);
-    copy_box1_to_box2(box,tempbox2.solution);
-    solve_sudoku(&tempbox1,0,0,1,N,1);
-    solve_sudoku(&tempbox2,0,0,N,1,-1);
-    if(is_box1_equal_to_box2(tempbox1.solution,tempbox2.solution)) 
-        return 1; //if both solutions are equal, that means unique solution
-    return 0;
+    sudoku tempbox;
+    copy_box1_to_box2(box,tempbox.solution);
+    if(number_of_soln(tempbox.solution,0,0,1,N,1)>1) return 0;
+    else return 1; 
+
+    // sudoku tempbox1;
+    // sudoku tempbox2;
+    // copy_box1_to_box2(box,tempbox1.solution);
+    // copy_box1_to_box2(box,tempbox2.solution);
+    // solve_sudoku(&tempbox1,0,0,1,N,1);
+    // solve_sudoku(&tempbox2,0,0,N,1,-1);
+    // if(is_box1_equal_to_box2(tempbox1.solution,tempbox2.solution)) 
+    //     return 1; //if both solutions are equal, that means unique solution
+    // return 0;
 }
 int validinput(int box[N][N],int i,int j,int num){
     if(num<1 || num>N) return 0;
