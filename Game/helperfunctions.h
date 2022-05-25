@@ -89,19 +89,12 @@ void takeinput(int box[N][N]){
 }
 int unique_solution(int box[N][N]){
     sudoku tempbox;
+    copy_box1_to_box2(box,tempbox.puzzle);
     copy_box1_to_box2(box,tempbox.solution);
-    if(number_of_soln(tempbox.solution,0,0,1,N,1)>1) return 0;
-    else return 1; 
-
-    // sudoku tempbox1;
-    // sudoku tempbox2;
-    // copy_box1_to_box2(box,tempbox1.solution);
-    // copy_box1_to_box2(box,tempbox2.solution);
-    // solve_sudoku(&tempbox1,0,0,1,N,1);
-    // solve_sudoku(&tempbox2,0,0,N,1,-1);
-    // if(is_box1_equal_to_box2(tempbox1.solution,tempbox2.solution)) 
-    //     return 1; //if both solutions are equal, that means unique solution
-    // return 0;
+    solve_sudoku(tempbox.puzzle,0,0,1,N,1);
+    solve_sudoku(tempbox.solution,0,0,N,1,-1);
+    if(is_box1_equal_to_box2(tempbox.puzzle,tempbox.solution)) return 1;
+    else return 0;
 }
 int validinput(int box[N][N],int i,int j,int num){
     if(num<1 || num>N) return 0;

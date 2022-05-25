@@ -8,9 +8,9 @@ void difficulty_mode(sudoku *matrix){
         scanf("%d",&choice);
         switch (choice)
         {
-        case 1: k = rand() % 10 + 20;
+        case 1: k = rand() % 5 + 18;
             goto out;
-        case 2: k = rand() % 10 + 10;
+        case 2: k = rand() % 5 + 10;
             goto out;
         case 3: 
             return;
@@ -70,7 +70,7 @@ void play(){
     sudoku matrix;
     init(&matrix);
     diagonal_solve(&matrix);
-    solve_sudoku(&matrix,0,0,1,N,1);
+    solve_sudoku(matrix.solution,0,0,1,N,1);
     copy_box1_to_box2(matrix.solution,matrix.puzzle);
     generate_puzzle(&matrix);
     load_and_play_sudoku(&matrix);
@@ -90,7 +90,7 @@ void input(){
         return;
     }
     copy_box1_to_box2(matrix.puzzle,matrix.solution);
-    solve_sudoku(&matrix,0,0,1,N,1);
+    solve_sudoku(matrix.solution,0,0,1,N,1);
     sudoku current;
     copy_box1_to_box2(matrix.puzzle,current.puzzle);
     while(1){
