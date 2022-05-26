@@ -36,7 +36,7 @@ int clash(int **box,int i,int j,int num){
     if(boxclash(box,i,j,num)) return 1;
     return 0;
 }
-void zero_sudoku(sudoku *matrix){
+void nullify_sudoku(sudoku *matrix){
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
             matrix->puzzle[i][j] = 0;

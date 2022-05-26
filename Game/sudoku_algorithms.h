@@ -11,7 +11,7 @@ void difficulty_mode(sudoku *matrix,int DIFFICULTY_LEVEL){
     fill_k_empty_boxes(matrix,k);
 }
 void play(int DIFFICULTY_LEVEL){
-    zero_sudoku(&matrix);
+    nullify_sudoku(&matrix);
     diagonal_solve(&matrix);
     solve_sudoku(matrix.solution,0,0,1,N,1);
     copy_box1_to_box2(matrix.solution,matrix.puzzle);
@@ -102,24 +102,24 @@ void fill_k_empty_boxes(sudoku *matrix,int k){
         total_empty_boxes--;
     }
 }
-void get_a_hint(sudoku *box){
+void get_a_hint(sudoku *current){
     int count=0;
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
-            if(box->puzzle[i][j]==0) count++;
+            if(current->puzzle[i][j]==0) count++;
         }
     }
     if(count==0) return;
     int pos = rand()%count+1;
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
-            if(box->puzzle[i][j]==0) pos--;
+            if(current->puzzle[i][j]==0) pos--;
             if(pos==0){
                 char data[2];
                 strcpy(data,"0");
                 sprintf(data,"%d",matrix.solution[i][j]);
                 gtk_entry_set_text(GTK_ENTRY(gmatrix[i][j]),data);
-                current.puzzle[i][j] = matrix.solution[i][j];
+                current->puzzle[i][j] = matrix.solution[i][j];
             }
         }
     }

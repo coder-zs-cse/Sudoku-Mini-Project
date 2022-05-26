@@ -18,20 +18,30 @@ sudoku matrix,current;
 GtkWidget *gmatrix[N][N];
 GtkWidget *window;
 
-void save_progress(sudoku*,sudoku*,char *);
-void generate_puzzle(sudoku*);
-void get_a_hint(sudoku*);
-void fill_k_empty_boxes(sudoku*,int);
-void diagonal_solve(sudoku*);
+int rowclash(int **box,int row,int col,int num);
+int columnclash(int **box,int row,int col,int num);
+int boxclash(int **box,int row,int col,int num);
+int clash(int **box,int row,int col,int num);
+void nullify_sudoku(sudoku *matrix);
+
+void open_progress(char *file_path);
+void save_progress(char *file_path);
+void generate_puzzle(sudoku* matrix);
+void get_a_hint(sudoku* current);
+void fill_k_empty_boxes(sudoku* matrix,int k);
+void diagonal_solve(sudoku* matrix);
 void copy_box1_to_box2(int **box1,int **box2);
-void init(sudoku*);
+void init(sudoku* matrix);
 int validinput(int **box,int,int,int);
 void printparallel(int **box1,int **box2);
 void printbox(int **box);
 int is_box1_equal_to_box2(int **box1,int **box2);
-int solve_sudoku(int **box,int,int,int,int,int);
+int solve_sudoku(int **box,int xstart,int ystart,int xll,int yll,int incre_flag);
 int isvalidsudoku(int **box);
 void difficulty_mode(sudoku*,int);
+int select_random_grid(int visited[N*N+1],int no_of_grids_left);
+int select_random_number(int numvisited[N+1],int no_of_num_left);
+void puzzle_generator(sudoku *matrix,int visited[N*N+1],int steps);
 void play(int);
 
 #include "printfunctions.h"
@@ -135,7 +145,7 @@ static void menu_event(GtkWidget *widget,gpointer data){
             gtk_widget_show_all(dialog);
             gint resp = gtk_dialog_run(GTK_DIALOG(dialog));
             if(resp == GTK_RESPONSE_OK){
-                save_progress(&matrix,&current,gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
+                save_progress(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
                 gtk_widget_destroy(dialog);
             }
             else{
@@ -168,10 +178,32 @@ void solve_gtk_sudoku(GtkWidget *widget,gpointer data){
         }
     }
 }
+void check_gtk_sudoku(GtkWidget *widget,gpointer data){
+    load_puzzle(current.puzzle);
+    int finished_flag = 1;
+    int error_check_flag = 0;
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
+            if(current.puzzle[i][j]==0) finished_flag=0;
+            else if(current.puzzle[i][j]!=matrix.solution[i][j]) {
+                error_check_flag=1;
+                break;
+            }
+        }
+        if(error_check_flag) break;
+    }
+    if(finished_flag){
+        open_dialog("Congratulations!, You have solved the sudoku");
+        return;
+    }
+    if(error_check_flag) open_dialog("Your sudoku is incorrect");
+    else   open_dialog("Progress so far is correct");
+}
 void hint_gtk_sudoku(GtkWidget *widget,gpointer data){
     load_puzzle(current.puzzle);
     get_a_hint(&current);
 }
+
 int main(int argc,char *argv[]){
 
     srand(time(0));
@@ -262,7 +294,9 @@ int main(int argc,char *argv[]){
     g_signal_connect(button,"clicked",G_CALLBACK(hint_gtk_sudoku),NULL);
     gtk_box_pack_start(GTK_BOX(vbox),button,0,0,0);
 
-
+    button = gtk_button_new_with_label("Check if correct");
+    g_signal_connect(button,"clicked",G_CALLBACK(check_gtk_sudoku),NULL);
+    gtk_box_pack_start(GTK_BOX(vbox),button,0,0,0);
 
     g_signal_connect(window,"delete-event",G_CALLBACK(gtk_main_quit),NULL);
     gtk_container_add(GTK_CONTAINER(window),vbox);

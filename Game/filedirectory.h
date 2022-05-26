@@ -20,27 +20,26 @@ void open_progress(char *file_path){
     printbox(current.puzzle);
 
 }
-void save_progress(sudoku *matrix,sudoku *current,char *file_path){
+void save_progress(char *file_path){
     FILE *pointer = fopen(file_path,"w+");
-    printf("%s\n",file_path);
-    printparallel(matrix->puzzle,matrix->solution);
+    printparallel(matrix.puzzle,matrix.solution);
     if(!pointer){
         printf("Couldn't save the progress due to a file error\n");
     }
     else{
         for(int i=0;i<N;i++){
             for(int j=0;j<N;j++){
-                fprintf(pointer,"%d ",matrix->puzzle[i][j]+1);
+                fprintf(pointer,"%d ",matrix.puzzle[i][j]+1);
             }
         }
         for(int i=0;i<N;i++){
             for(int j=0;j<N;j++){
-                fprintf(pointer,"%d ",matrix->solution[i][j]);
+                fprintf(pointer,"%d ",matrix.solution[i][j]);
             }
         }
         for(int i=0;i<N;i++){
             for(int j=0;j<N;j++){
-                fprintf(pointer,"%d ",current->puzzle[i][j]);
+                fprintf(pointer,"%d ",current.puzzle[i][j]);
             }
         }
         fclose(pointer);
