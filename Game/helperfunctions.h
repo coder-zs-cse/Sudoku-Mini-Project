@@ -74,19 +74,6 @@ int select_random_number(int box[N][N],int numvisited[N+1],int no_of_num_left){
     numvisited[num]=0;
     return num;
 }
-
-void takeinput(int box[N][N]){
-    printf("Enter coordinates and number in format: row col num\n");
-    int i,j,num;
-    scanf("%d%d %d",&i,&j,&num);
-    if(validinput(box,i,j,num)){
-        box[i][j]=num;
-    }
-    else{
-        printf("Invalid entry! Try again\n");
-    }
-
-}
 int unique_solution(int box[N][N]){
     sudoku tempbox;
     copy_box1_to_box2(box,tempbox.puzzle);

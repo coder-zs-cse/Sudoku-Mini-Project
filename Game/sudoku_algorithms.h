@@ -1,3 +1,23 @@
+void difficulty_mode(sudoku *matrix,int DIFFICULTY_LEVEL){
+    int k;
+    switch(DIFFICULTY_LEVEL){
+        case 1: k = rand() % 5 + 18;
+            break;
+        case 2: k = rand() % 5 + 10;
+            break;
+        case 3:
+            k=0;
+    }
+    fill_k_empty_boxes(matrix,k);
+}
+void play(int DIFFICULTY_LEVEL){
+    init(&matrix);
+    diagonal_solve(&matrix);
+    solve_sudoku(matrix.solution,0,0,1,N,1);
+    copy_box1_to_box2(matrix.solution,matrix.puzzle);
+    generate_puzzle(&matrix);
+    difficulty_mode(&matrix,DIFFICULTY_LEVEL);
+}
 
 void diagonal_solve(sudoku *puzzle){
     for(int diag =0;diag<N;diag+=M){
@@ -54,7 +74,7 @@ void puzzle_generator(sudoku *matrix,int visited[N*N+1],int steps){
     int store = matrix->puzzle[x][y];
     matrix->puzzle[x][y] = 0;
     if(!unique_solution(matrix->puzzle)){
-        matrix->puzzle[x][y]=store;    //restore 
+        matrix->puzzle[x][y]=store;    //restore
     }
     puzzle_generator(matrix,visited,steps-1);
 }
@@ -64,7 +84,7 @@ void fill_k_empty_boxes(sudoku *matrix,int k){
         for(int j=0;j<N;j++){
             if(matrix->puzzle[i][j]==0) total_empty_boxes++;
         }
-    }  
+    }
     while(k--){
         int number = rand()%total_empty_boxes +1;
         for(int i=0;i<N;i++){
@@ -80,40 +100,25 @@ void fill_k_empty_boxes(sudoku *matrix,int k){
         total_empty_boxes--;
     }
 }
-void get_a_hint(sudoku *current,sudoku *matrix){
+void get_a_hint(sudoku *box){
     int count=0;
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
-            if(current->puzzle[i][j]==0) count++;
+            if(box->puzzle[i][j]==0) count++;
         }
-    }  
-    int number = rand()%count +1;
+    }
+    if(count==0) return;
+    int pos = rand()%count+1;
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
-            if(current->puzzle[i][j]==0) number--;
-            if(number==0){
-                printf("At (%d,%d) the number is %d\n",i,j,matrix->solution[i][j]);
-                current->puzzle[i][j] = matrix->solution[i][j];
-                return;
+            if(box->puzzle[i][j]==0) pos--;
+            if(pos==0){
+                char data[2];
+                strcpy(data,"0");
+                sprintf(data,"%d",matrix.solution[i][j]);
+                gtk_entry_set_text(GTK_ENTRY(gmatrix[i][j]),data);
             }
         }
-    }
-
-}
-void erase_input(int box[N][N],int puzzle[N][N]){
-    printparallel(box,puzzle);
-    printf("Sudoku given on right side is the puzzle question\n");
-    int i,j;
-    printf("Enter the coordinates of your input where you want to erase\n");
-    scanf("%d%d",&i,&j);
-    if(puzzle[i][j]!=0){
-        printf("Invalid coordinates!\n Chosen coordinates are not inputted by user by are part of puzzle\n");
-    }
-    else if(box[i][j]==0){
-        printf("Chosen coordinates is already blank\n");
-    }
-    else{
-        box[i][j] = 0;
     }
 }
 

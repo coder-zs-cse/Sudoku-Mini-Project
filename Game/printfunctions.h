@@ -1,13 +1,10 @@
 void print(int box[N][N]){
-    for(int i=0;i<N;i++)
-    {
+    for(int i=0;i<N;i++){
         for(int j=0;j<N;j++) printf("%d ",box[i][j]);
         printf("\n");
     }
     printf("\n");
-    
 }
-
 
 void printbox(int box[N][N]){
     for(int i=0;i<M;i++)printf(" ");
