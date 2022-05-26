@@ -10,15 +10,9 @@
 enum difficulty{EASY=1,MEDIUM, HARD};
 
 typedef struct {
-    int puzzle[N][N];
-    int solution[N][N];
+    int **puzzle;
+    int **solution;
 }sudoku;
-
-typedef struct{
-    char foldername[50];
-    char folderpath[50];
-}Folder;
-Folder save_sudoku;
 
 sudoku matrix,current;
 GtkWidget *gmatrix[N][N];
@@ -26,24 +20,19 @@ GtkWidget *window;
 
 void save_progress(sudoku*,sudoku*,char *);
 void generate_puzzle(sudoku*);
-void erase_input(int box[N][N],int puzzle[N][N]);
 void get_a_hint(sudoku*);
 void fill_k_empty_boxes(sudoku*,int);
 void diagonal_solve(sudoku*);
-void copy_box1_to_box2(int box1[N][N],int box2[N][N]);
+void copy_box1_to_box2(int **box1,int **box2);
 void init(sudoku*);
-int validinput(int box[N][N],int,int,int);
-void takeinput(int box[N][N]);
-void printparallel(int box1[N][N],int box2[N][N]);
-void printbox(int box[N][N]);
-int is_box1_equal_to_box2(int box1[N][N],int box2[N][N]);
-int solve_sudoku(int box[N][N],int,int,int,int,int);
-int isvalidsudoku(int box[N][N]);
+int validinput(int **box,int,int,int);
+void printparallel(int **box1,int **box2);
+void printbox(int **box);
+int is_box1_equal_to_box2(int **box1,int **box2);
+int solve_sudoku(int **box,int,int,int,int,int);
+int isvalidsudoku(int **box);
 void difficulty_mode(sudoku*,int);
-void play_sudoku(sudoku*,sudoku*,int);
-void load_and_play_sudoku(sudoku*,int);
 void play(int);
-void input();
 
 #include "printfunctions.h"
 #include "helperfunctions.h"
@@ -70,11 +59,9 @@ void set_color(int i,int j){
     else{
         const GdkRGBA pink =  {0, 0x00DD, 0x00D7, 0x0000};
         gtk_widget_override_background_color(gmatrix[i][j], GTK_STATE_NORMAL, &pink);
-
     }
-
 }
-void load_puzzle(int puzzle[N][N]){
+void load_puzzle(int **puzzle){
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
             const char *data = gtk_entry_get_text(GTK_ENTRY(gmatrix[i][j]));
@@ -87,7 +74,7 @@ void load_puzzle(int puzzle[N][N]){
         }
     }
 }
-void load_gpuzzle(int puzzle[N][N]){
+void load_gpuzzle(int **puzzle){
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
             if(puzzle[i][j]!=0){
@@ -112,7 +99,7 @@ static void menu_event(GtkWidget *widget,gpointer data){
     }
     else if(strcmp(label,"Rules")==0 || strcmp(label,"About")==0 ){
         if(strcmp(label,"About")==0){
-            open_dialog("Project: Sudoku Generator and Solver Using C with Gtk\nRoll number: 20CSE1030\nName: Zubin Shah");
+            open_dialog("Project: Sudoku Generator and Solver Using C with Gtk\nName: Zubin Shah\nRoll number: 20CSE1030");
         }
         if(strcmp(label,"Rules")==0){
            const char rules[400] = "Rule 1 - Each row must contain the numbers from 1 to 9, without repetitions\nRule 2 - Each column must contain the numbers from 1 to 9, without repetitions\nRule 3 - The digits can only occur once per block\nEach puzzle has a unique solution\nPress the play button and select the difficulty level to get started";
@@ -188,6 +175,8 @@ void hint_gtk_sudoku(GtkWidget *widget,gpointer data){
 int main(int argc,char *argv[]){
 
     srand(time(0));
+    init(&matrix);
+    init(&current);
 
     static char *File[4] = {"New","Save","Open","Quit"};
     static char *New_File[3] = {"Easy","Medium","Hard"};
@@ -218,6 +207,7 @@ int main(int argc,char *argv[]){
             new_menu = gtk_menu_new();
             gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item),new_menu);
         }
+        else if(i==3) g_signal_connect(menu_item,"activate",G_CALLBACK(gtk_main_quit),NULL);
         else g_signal_connect(menu_item,"activate",G_CALLBACK(menu_event),NULL);
     }
     for(int i=0;i<3;i++){
@@ -253,18 +243,16 @@ int main(int argc,char *argv[]){
         }
         gtk_box_pack_start(GTK_BOX(vbox),hbox,0,0,0);
     }
+
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
             gtk_entry_set_text(GTK_ENTRY(gmatrix[i][j])," ");
         }
     }
 
-
-
     button = gtk_button_new_with_label("Show solution");
     g_signal_connect(button,"clicked",G_CALLBACK(solve_gtk_sudoku),NULL);
     gtk_box_pack_start(GTK_BOX(vbox),button,0,0,0);
-
 
     button = gtk_button_new_with_label("Reset");
     g_signal_connect(button,"clicked",G_CALLBACK(reset),NULL);
@@ -273,6 +261,7 @@ int main(int argc,char *argv[]){
     button = gtk_button_new_with_label("Get a hint");
     g_signal_connect(button,"clicked",G_CALLBACK(hint_gtk_sudoku),NULL);
     gtk_box_pack_start(GTK_BOX(vbox),button,0,0,0);
+
 
 
     g_signal_connect(window,"delete-event",G_CALLBACK(gtk_main_quit),NULL);

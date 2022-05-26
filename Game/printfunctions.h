@@ -1,12 +1,4 @@
-void print(int box[N][N]){
-    for(int i=0;i<N;i++){
-        for(int j=0;j<N;j++) printf("%d ",box[i][j]);
-        printf("\n");
-    }
-    printf("\n");
-}
-
-void printbox(int box[N][N]){
+void printbox(int **box){
     for(int i=0;i<M;i++)printf(" ");
     for(int i=0;i<N;i++){
         if(i%M==0) printf(" ");
@@ -33,7 +25,7 @@ void printbox(int box[N][N]){
     }
     printf("\n");
 }
-void printparallel(int box1[N][N],int box2[N][N]){
+void printparallel(int **box1,int **box2){
     for(int i=0;i<M;i++)printf(" ");
     for(int i=0;i<N;i++){
         if(i%M==0) printf("  ");

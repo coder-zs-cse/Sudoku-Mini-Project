@@ -11,15 +11,17 @@ void difficulty_mode(sudoku *matrix,int DIFFICULTY_LEVEL){
     fill_k_empty_boxes(matrix,k);
 }
 void play(int DIFFICULTY_LEVEL){
-    init(&matrix);
+    zero_sudoku(&matrix);
     diagonal_solve(&matrix);
     solve_sudoku(matrix.solution,0,0,1,N,1);
     copy_box1_to_box2(matrix.solution,matrix.puzzle);
     generate_puzzle(&matrix);
+    printbox(matrix.puzzle);
     difficulty_mode(&matrix,DIFFICULTY_LEVEL);
+    printbox(matrix.puzzle);
 }
 
-void diagonal_solve(sudoku *puzzle){
+void diagonal_solve(sudoku *matrix){
     for(int diag =0;diag<N;diag+=M){
         int numvisited[N+1];
         int cellvisited[N+1];
@@ -27,15 +29,15 @@ void diagonal_solve(sudoku *puzzle){
             numvisited[i] = cellvisited[i] = 1;
         }
         for(int emptyboxes=N;emptyboxes>=1;emptyboxes--){
-            int cell = select_random_number(puzzle->solution,cellvisited,emptyboxes);
-            int num = select_random_number(puzzle->solution,numvisited,emptyboxes);
+            int cell = select_random_number(cellvisited,emptyboxes);
+            int num = select_random_number(numvisited,emptyboxes);
             int x = (cell-1)/M;
             int y = (cell-1)%M;
-            puzzle->solution[diag+x][diag+y] = num;
+            matrix->solution[diag+x][diag+y] = num;
         }
     }
 }
-int solve_sudoku(int solution[N][N],int i,int j,int S,int E,int T){
+int solve_sudoku(int **solution,int i,int j,int S,int E,int T){
     if(i==N)  return 1;
     if(j==N)  return solve_sudoku(solution,i+1,0,S,E,T);
     if(solution[i][j]!=0) return solve_sudoku(solution,i,j+1,S,E,T);
@@ -117,6 +119,7 @@ void get_a_hint(sudoku *box){
                 strcpy(data,"0");
                 sprintf(data,"%d",matrix.solution[i][j]);
                 gtk_entry_set_text(GTK_ENTRY(gmatrix[i][j]),data);
+                current.puzzle[i][j] = matrix.solution[i][j];
             }
         }
     }
