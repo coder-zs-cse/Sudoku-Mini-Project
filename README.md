@@ -13,6 +13,6 @@ Features of this sudoku game:-
 
 ![image](https://user-images.githubusercontent.com/75170293/209426851-abdde11e-ac25-4512-b249-187610b0e78b.png)
 
-Building this project helped in sharpening problem solving abilities in C language. Exploring and learning about GTK library through documentation was a challenge.
+Building this project helped in sharpening problem solving abilities in C language. <br>Exploring and learning about GTK library through documentation was a challenge.
 
-Overall this project is a great learning experience for anyone who wants to do a project in C.
+Overall this project is a great learning experience for anyone who wants to do a project in C with GUI.
